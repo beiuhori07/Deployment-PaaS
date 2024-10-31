@@ -5,7 +5,7 @@ with robust monitoring capabilities for log and performance metrics collection. 
 the integrity of each application's dependencies using Blockchain technology.
 
 # Features
-- automatic and autonomous deployments in VMs or Containers inside your own infrastructure
+- fully automatic and dynamic deployments in VMs or Containers inside your own infrastructure
 - VMs are created and configured dynamically from scratch for each deployment through IaC 
 - the websites are exposed publicly on the internet
 - entirely dynamic communication in the distributed system
