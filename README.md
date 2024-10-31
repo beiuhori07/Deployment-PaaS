@@ -1,6 +1,6 @@
 # DevOps Platform with Blockchain Integration
 
-This project implements a DevOps Platform as a Service designed to securely launch and publicly expose applications on the internet,
+This project implements a DevOps Platform as a Service designed to securely launch and publicly expose web applications on the internet,
 with robust monitoring capabilities for log and performance metrics collection. The deployment process ensures security by verifying
 the integrity of each application's dependencies using Blockchain technology.
 
