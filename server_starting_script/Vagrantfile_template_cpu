@@ -1,0 +1,86 @@
+Vagrant.configure("2") do |config|
+  config_json = JSON.parse(File.read("config.json"))
+  repo_url = config_json["repoUrl"]
+  repo_name = config_json["repoName"]
+  port = config_json["port"]
+  bridgeName = config_json["bridge"]
+  base_name = repo_name
+
+
+  config.vm.define "#{base_name}" do |vm|
+    vm.vm.box = "ubuntu/focal64"
+  end
+
+  config.vm.boot_timeout = 1200
+  config.vm.network "public_network", bridge: bridgeName
+
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+    vb.memory = "4096"
+    vb.cpus = 4
+    vb.customize ["modifyvm", :id, "--audio", "none"]
+  end
+
+
+  config.vm.hostname = repo_name
+
+  config.vm.provision "shell", inline: <<-SHELL
+
+    export SERVICE_NAME="#{repo_url}"
+
+    sudo apt update
+    sudo apt install -y openjdk-21-jdk git unzip
+
+    java -version
+
+    DD_API_KEY=#{datadog_api_key} DD_SITE="datadoghq.eu"  bash -c "$(curl -L https://s3.amazonaws.com/dd-agent/scripts/install_script_agent7.sh)"
+
+    cd /etc/datadog-agent/conf.d
+    mkdir java.d
+    cd java.d
+
+    echo -e "logs:
+      - type: file
+        path: \"/home/vagrant/integrity-check/logs/app.log\"
+        service: $SERVICE_NAME
+        source: java
+        sourcecategory: sourcecode" > config.yaml
+
+
+    echo -e "\nlogs_enabled: true" >> /etc/datadog-agent/datadog.yaml
+
+    git clone #{repo_url} /home/vagrant/integrity-check
+
+    cd /home/vagrant/integrity-check
+
+    chmod +x ./gradlew
+
+    ./gradlew build
+
+    ./gradlew bootRun &
+
+
+    
+    sudo service datadog-agent restart
+
+    touch /home/vagrant/integrity-check/serveo_output.log
+
+    (nohup ssh -t -t -o StrictHostKeyChecking=no -R 80:localhost:#{port} serveo.net > /home/vagrant/integrity-check/serveo_output.log 2>&1 &)
+
+    for i in {1..5}; do
+      if grep -q 'https://' /home/vagrant/integrity-check/serveo_output.log; then
+        break
+      fi
+      echo "Waiting for serveo output (attempt $i)..."
+      cat /home/vagrant/integrity-check/serveo_output.log
+      sleep 2
+    done
+    cat /home/vagrant/integrity-check/serveo_output.log
+
+
+  SHELL
+
+
+
+end

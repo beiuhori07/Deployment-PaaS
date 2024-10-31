@@ -1,0 +1,25 @@
+{
+	"service": {
+		"name": "vm-service",
+		"tags": ["vm"],
+		"port": 22,
+		"checks": [{
+			"id": "vm-service-check",
+			"name": "VM service health check",
+			"args": ["/etc/consul.d/checkDatadogAgent.sh"],
+			"interval": "30s",
+			"timeout": "5s"
+		},
+		{
+			"id": "http-check",
+			"name": "HTTP Check on deploy service",
+			"http": "http://localhost:3001/health",
+			"interval": "10s",
+			"timeout": "5s",
+			"method": "GET"
+		}],
+		"meta": {
+			"geolocation": "romania"
+		}
+	}
+}
