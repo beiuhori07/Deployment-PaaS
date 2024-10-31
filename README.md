@@ -25,7 +25,7 @@ the integrity of each application's dependencies using Blockchain technology.
 - Blockchain: Ethereum(Sepolia)
 - Shell scripting
 - Networking configs used: DHCP, SSH, DNS, Network adapters
-- UI: No UI at the moment, just using Github Checkruns, Datadog and Consul graphical interfaces for managing and monitoring the platform
+- UI: No UI at the moment, just using Terminals, Github Checkruns, Datadog and Consul graphical interfaces for managing and monitoring the platform
 
 # Platform Architecture
 ![image](https://github.com/user-attachments/assets/c25f849e-9190-4830-958b-26b83a45af95)
